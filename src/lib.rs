@@ -9,6 +9,7 @@ use smash::lib::lua_const::*;
 use smash::lua2cpp::L2CFighterCommon;
 use std::{collections::HashMap, fs::metadata, path::PathBuf, sync::Mutex};
 use walkdir::WalkDir;
+use smashline::*;
 
 lazy_static::lazy_static! {
     pub static ref FILES_CONFIG: Mutex<HashMap<u64, EntryInfo>> = Mutex::new(HashMap::new());
@@ -31,6 +32,7 @@ pub static mut VICTOR: usize = 0;
 pub static mut FIGHTER_MANAGER_ADDR: usize = 0;
 
 // Use this for general per-frame fighter-level hooks
+#[fighter_frame_callback]
 pub fn once_per_fighter_frame(fighter: &mut L2CFighterCommon) {
     unsafe {
         let lua_state = fighter.lua_state_agent;
@@ -146,6 +148,7 @@ pub fn get_character_name(id: i32) -> &'static str {
         89 => "edge",
         90 => "eflame",
         91 => "elight",
+        92 => "demon",
         110 => "ice_climber",
         111 => "zenigame",
         112 => "fushigisou",
@@ -386,5 +389,5 @@ pub fn main() {
         CHARCTER_CONFIG.lock().unwrap().entries
     );
     
-    acmd::add_custom_hooks!(once_per_fighter_frame);
+    smashline::install_agent_frame_callbacks!(once_per_fighter_frame);
 }
